@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Mic, MicOff, Languages, X, Bot, Sparkles } from 'lucide-react';
+import { Send, Mic, MicOff, Languages, X, Bot, Sparkles, Volume2 } from 'lucide-react';
 import { ChatMessage } from '../types/farmer';
 
 interface ChatInterfaceProps {
@@ -7,11 +7,15 @@ interface ChatInterfaceProps {
   onClose: () => void;
 }
 
+// Speech recognition and synthesis setup
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const speechSynthesis = window.speechSynthesis;
+
 export default function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      message: 'നമസ്കാരം! I am your Krishi Sakhi, your AI farming companion. How can I help you today with your farming needs? You can ask me in English or Malayalam! 🌾',
+      message: 'നമസ്കാരം! I am your Krishi Sakhi, your AI farming companion. I can understand and respond in both English and Malayalam. How can I help you today? 🌾',
       sender: 'assistant',
       timestamp: new Date().toISOString(),
       language: 'english',
@@ -20,8 +24,38 @@ export default function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
   ]);
   const [newMessage, setNewMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [language, setLanguage] = useState<'english' | 'malayalam'>('english');
+  const [recognition, setRecognition] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (SpeechRecognition) {
+      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+      recognitionInstance.lang = language === 'malayalam' ? 'ml-IN' : 'en-IN';
+      
+      recognitionInstance.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setNewMessage(transcript);
+        setIsListening(false);
+        setIsRecording(false);
+      };
+      
+      recognitionInstance.onerror = () => {
+        setIsListening(false);
+        setIsRecording(false);
+      };
+      
+      recognitionInstance.onend = () => {
+        setIsListening(false);
+        setIsRecording(false);
+      };
+      
+      setRecognition(recognitionInstance);
+    }
+  }, [language]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -30,6 +64,40 @@ export default function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const speakMessage = (text: string, lang: string) => {
+    if (speechSynthesis) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang === 'malayalam' ? 'ml-IN' : 'en-IN';
+      utterance.rate = 0.8;
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  const getAIResponse = async (userMessage: string, lang: string) => {
+    // Simulate API call to agricultural knowledge base
+    const responses = {
+      english: [
+        'Based on current weather conditions in Kerala, I recommend checking your rice crop for brown plant hopper. The recent humidity levels create favorable conditions for pests.',
+        'For better yield this season, consider applying organic fertilizer when the weather clears up. Current soil moisture levels are optimal.',
+        'The upcoming monsoon forecast shows moderate rainfall. This is excellent for your coconut trees. Ensure proper drainage around the base.',
+        'I notice recent pest activity reports in your area. Consider preventive neem spray application for your crops.',
+        'Current market prices show rice at ₹2,850/quintal in Kottayam. This is a 2% increase from last week - good time to consider selling.',
+        'Soil health data suggests your field may benefit from organic matter. Consider adding compost before the next planting season.'
+      ],
+      malayalam: [
+        'കേരളത്തിലെ നിലവിലെ കാലാവസ്ഥാ സാഹചര്യങ്ങളെ അടിസ്ഥാനമാക്കി, നിങ്ങളുടെ നെല്ല് വിളയിൽ ബ്രൗൺ പ്ലാന്റ് ഹോപ്പർ പരിശോധിക്കാൻ ഞാൻ ശുപാർശ ചെയ്യുന്നു.',
+        'ഈ സീസണിൽ മികച്ച വിളവിനായി, കാലാവസ്ഥ മെച്ചപ്പെടുമ്പോൾ ജൈവ വളം പ്രയോഗിക്കുന്നത് പരിഗണിക്കുക.',
+        'വരാനിരിക്കുന്ന മഴ നിങ്ങളുടെ തെങ്ങുകൾക്ക് നല്ലതാണ്. അടിഭാഗത്തിന് ചുറ്റും നല്ല ഡ്രെയിനേജ് ഉറപ്പാക്കുക.',
+        'നിങ്ങളുടെ പ്രദേശത്ത് കീടങ്ങളുടെ പ്രവർത്തനം റിപ്പോർട്ട് ചെയ്യപ്പെട്ടിട്ടുണ്ട്. വേപ്പ് സ്പ്രേ പ്രയോഗിക്കുന്നത് പരിഗണിക്കുക.',
+        'കോട്ടയം മാർക്കറ്റിൽ നെല്ലിന്റെ വില ₹2,850/ക്വിന്റൽ ആണ്. ഇത് കഴിഞ്ഞ ആഴ്ചയെ അപേക്ഷിച്ച് 2% വർദ്ധനവാണ്.',
+        'മണ്ണിന്റെ ആരോഗ്യ ഡാറ്റ സൂചിപ്പിക്കുന്നത് നിങ്ങളുടെ വയലിന് ജൈവവസ്തുക്കൾ ഗുണം ചെയ്യുമെന്നാണ്.'
+      ]
+    };
+    
+    const responseList = responses[lang as keyof typeof responses] || responses.english;
+    return responseList[Math.floor(Math.random() * responseList.length)];
+  };
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
@@ -46,26 +114,13 @@ export default function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
     setMessages(prev => [...prev, userMessage]);
     setNewMessage('');
 
-    // Simulate AI response
+    // Get AI response
     setTimeout(() => {
-      const responses = [
-        language === 'malayalam' 
-          ? 'നിങ്ങളുടെ നെല്ല് വിളയ്ക്ക് ബ്രൗൺ പ്ലാന്റ് ഹോപ്പർ പരിശോധിക്കാൻ ഞാൻ ശുപാർശ ചെയ്യുന്നു. സമീപകാല മഴ കീടങ്ങൾക്ക് അനുകൂല സാഹചര്യങ്ങൾ സൃഷ്ടിക്കുന്നു.'
-          : 'Based on your rice crop, I recommend checking for brown plant hopper. The recent rains create favorable conditions for pests.',
-        language === 'malayalam'
-          ? 'മികച്ച വിളവിനായി, കാലാവസ്ഥ മെച്ചപ്പെടുമ്പോൾ അടുത്ത ആഴ്ച ജൈവ വളം പ്രയോഗിക്കുന്നത് പരിഗണിക്കുക.'
-          : 'For better yield, consider applying organic fertilizer next week when the weather clears up.',
-        language === 'malayalam'
-          ? 'വരാനിരിക്കുന്ന മഴ നിങ്ങളുടെ തെങ്ങുകൾക്ക് നല്ലതാണ്. അടിഭാഗത്തിന് ചുറ്റും ഡ്രെയിനേജ് വൃത്തിയാക്കുക.'
-          : 'The upcoming rain is good for your coconut trees. Make sure drainage is clear around the base.',
-        language === 'malayalam'
-          ? 'നിങ്ങൾ അടുത്തിടെ പ്രവർത്തനങ്ങളൊന്നും രേഖപ്പെടുത്തിയിട്ടില്ലെന്ന് ഞാൻ ശ്രദ്ധിച്ചു. വരാനിരിക്കുന്ന കൃഷി ജോലികളെക്കുറിച്ച് ഞാൻ നിങ്ങളെ ഓർമ്മിപ്പിക്കട്ടെ?'
-          : 'I notice you haven\'t logged any activities recently. Would you like me to remind you about upcoming farm tasks?'
-      ];
+      const responseText = await getAIResponse(userMessage.message, language);
       
       const aiResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        message: responses[Math.floor(Math.random() * responses.length)],
+        message: responseText,
         sender: 'assistant',
         timestamp: new Date().toISOString(),
         language,
@@ -73,17 +128,27 @@ export default function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
       };
       
       setMessages(prev => [...prev, aiResponse]);
+      
+      // Speak the response
+      speakMessage(responseText, language);
     }, 1000);
   };
 
   const toggleRecording = () => {
-    setIsRecording(!isRecording);
-    // In a real app, this would start/stop voice recording
-    if (!isRecording) {
-      setTimeout(() => {
-        setIsRecording(false);
-        setNewMessage(language === 'malayalam' ? 'എന്റെ നെല്ലിന് എന്ത് വളം ഇടണം?' : 'What fertilizer should I use for my rice crop?');
-      }, 2000);
+    if (!recognition) {
+      alert('Speech recognition is not supported in your browser');
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+      setIsListening(false);
+      setIsRecording(false);
+    } else {
+      recognition.lang = language === 'malayalam' ? 'ml-IN' : 'en-IN';
+      recognition.start();
+      setIsListening(true);
+      setIsRecording(true);
     }
   };
 
@@ -170,6 +235,7 @@ export default function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
                   ? 'bg-red-100 text-red-600 hover:bg-red-200' 
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
+              disabled={!recognition}
             >
               {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
             </button>
@@ -183,19 +249,24 @@ export default function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
             </button>
           </div>
           
-          {isRecording && (
+          {isListening && (
             <div className="mt-2 flex items-center justify-center space-x-2 text-red-600">
               <div className="flex space-x-1">
                 <div className="animate-pulse h-2 w-2 bg-red-600 rounded-full"></div>
                 <div className="animate-pulse h-2 w-2 bg-red-600 rounded-full" style={{ animationDelay: '0.2s' }}></div>
                 <div className="animate-pulse h-2 w-2 bg-red-600 rounded-full" style={{ animationDelay: '0.4s' }}></div>
               </div>
-              <span className="text-sm">Recording... Speak now</span>
+              <span className="text-sm">
+                {language === 'malayalam' ? 'കേൾക്കുന്നു... ഇപ്പോൾ സംസാരിക്കുക' : 'Listening... Speak now'}
+              </span>
             </div>
           )}
           
           <div className="mt-2 text-xs text-gray-500 text-center">
             Language: {language === 'malayalam' ? '🇮🇳 മലയാളം' : '🇬🇧 English'}
+            {!recognition && (
+              <div className="text-red-500 mt-1">Voice input not supported in this browser</div>
+            )}
           </div>
         </div>
       </div>

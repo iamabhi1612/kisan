@@ -115,9 +115,9 @@ function App() {
           />
         );
       case 'market':
-        return <MarketPrices />;
+        return <MarketPrices onBack={() => setActiveTab('dashboard')} />;
       case 'profile':
-        return <FarmerProfile farmer={farmer} onUpdate={setFarmer} />;
+        return <FarmerProfile farmer={farmer} onUpdate={setFarmer} onBack={() => setActiveTab('dashboard')} />;
       case 'farm':
         return <CropCalendar />;
       case 'progress':
@@ -125,7 +125,7 @@ function App() {
       case 'schemes':
         return <SchemeAlerts />;
       case 'knowledge':
-        return <KnowledgeBase />;
+        return <KnowledgeBase onBack={() => setActiveTab('dashboard')} />;
       case 'activities':
         return (
           <div className="space-y-6">
@@ -250,15 +250,15 @@ function App() {
       {/* Floating Chat Button */}
       <button
         onClick={() => setIsChatOpen(true)}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-green-600 to-green-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-30 animate-pulse"
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-green-600 to-green-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-30"
       >
         <MessageSquare className="h-6 w-6" />
       </button>
 
-      {/* Floating Activity Logger Button */}
+      {/* Floating Calendar Button */}
       <button
-        onClick={() => setIsActivityLoggerOpen(true)}
-        className="fixed bottom-6 right-20 bg-gradient-to-r from-blue-600 to-blue-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-30"
+        onClick={() => setActiveTab('farm')}
+        className="fixed top-20 right-6 bg-gradient-to-r from-blue-600 to-blue-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-30"
       >
         <Calendar className="h-5 w-5" />
       </button>
