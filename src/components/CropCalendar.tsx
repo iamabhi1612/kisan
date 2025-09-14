@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Sprout, Droplets, Zap, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Sprout, Droplets, Zap, Package, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 
 interface CropCalendarEvent {
   id: string;
@@ -12,6 +12,9 @@ interface CropCalendarEvent {
   completed: boolean;
 }
 
+interface CropCalendarProps {
+  onBack?: () => void;
+}
 const calendarEvents: CropCalendarEvent[] = [
   {
     id: '1',
@@ -77,7 +80,7 @@ const getEventColor = (type: string) => {
   }
 };
 
-export default function CropCalendar() {
+export default function CropCalendar({ onBack }: CropCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState(calendarEvents);
 
@@ -106,6 +109,17 @@ export default function CropCalendar() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="flex items-center space-x-2 text-green-600 hover:text-green-700 font-medium"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Dashboard</span>
+        </button>
+      )}
+
       <div className="flex items-center space-x-4">
         <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center shadow-sm">
           <Calendar className="h-6 w-6 text-green-600" />

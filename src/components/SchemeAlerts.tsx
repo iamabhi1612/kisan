@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Award, ExternalLink, Clock, CheckCircle, AlertCircle, Calendar } from 'lucide-react';
+import { Award, ExternalLink, Clock, CheckCircle, AlertCircle, Calendar, ArrowLeft } from 'lucide-react';
 
 interface Scheme {
   id: string;
@@ -14,6 +14,9 @@ interface Scheme {
   documents: string[];
 }
 
+interface SchemeAlertsProps {
+  onBack?: () => void;
+}
 const schemes: Scheme[] = [
   {
     id: '1',
@@ -82,7 +85,7 @@ const getStatusIcon = (status: string) => {
   }
 };
 
-export default function SchemeAlerts() {
+export default function SchemeAlerts({ onBack }: SchemeAlertsProps) {
   const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
 
   const activeSchemes = schemes.filter(s => s.status === 'active' || s.status === 'upcoming');
@@ -180,6 +183,17 @@ export default function SchemeAlerts() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="flex items-center space-x-2 text-green-600 hover:text-green-700 font-medium"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Dashboard</span>
+        </button>
+      )}
+
       <div className="flex items-center space-x-4">
         <div className="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center shadow-sm">
           <Award className="h-6 w-6 text-orange-600" />

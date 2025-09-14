@@ -23,14 +23,15 @@ interface NavigationProps {
 const navigationItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
   { id: 'profile', label: 'My Profile', icon: User },
-  { id: 'farm', label: 'Farm Details', icon: Sprout },
+  { id: 'farm', label: 'Crop Calendar', icon: Sprout },
   { id: 'activities', label: 'Activities', icon: Activity },
-  { id: 'chat', label: 'Ask Krishi Sakhi', icon: MessageSquare },
-  { id: 'advisories', label: 'Advisories', icon: Bell },
+  { id: 'chat', label: 'Chatbot', icon: MessageSquare },
+  { id: 'notifications', label: 'Reminders & Alerts', icon: Bell },
   { id: 'schemes', label: 'Govt Schemes', icon: Award },
   { id: 'progress', label: 'Progress', icon: BarChart3 },
   { id: 'market', label: 'Market Prices', icon: TrendingUp },
-  { id: 'knowledge', label: 'Knowledge Base', icon: BookOpen }
+  { id: 'knowledge', label: 'Knowledge Base', icon: BookOpen },
+  { id: 'settings', label: 'Settings', icon: User }
 ];
 
 export default function Navigation({ isOpen, onClose, activeTab, onTabChange }: NavigationProps) {

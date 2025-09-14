@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Calendar, Clock } from 'lucide-react';
+import { MessageSquare, Calendar, Clock, ArrowLeft } from 'lucide-react';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
 import Dashboard from './components/Dashboard';
@@ -55,7 +55,7 @@ function App() {
         setIsActivityLoggerOpen(true);
         break;
       case 'view-calendar':
-        setActiveTab('knowledge');
+        setActiveTab('farm');
         break;
       case 'market-prices':
         setActiveTab('market');
@@ -74,7 +74,7 @@ function App() {
         alert('Reports feature would be implemented here');
         break;
       case 'settings':
-        alert('Settings feature would be implemented here');
+        setActiveTab('settings');
         break;
       case 'crop-doctor':
         setIsCropDiagnosisOpen(true);
@@ -126,9 +126,46 @@ function App() {
         return <SchemeAlerts />;
       case 'knowledge':
         return <KnowledgeBase onBack={() => setActiveTab('dashboard')} />;
+      case 'chat':
+        setIsChatOpen(true);
+        setActiveTab('dashboard');
+        return null;
+      case 'notifications':
+        setIsNotificationOpen(true);
+        setActiveTab('dashboard');
+        return null;
+      case 'settings':
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className="flex items-center space-x-2 text-green-600 hover:text-green-700 font-medium"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Dashboard</span>
+              </button>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Settings</h3>
+              <p className="text-gray-600">
+                Settings feature would be implemented with app preferences, notifications, language settings, etc.
+              </p>
+            </div>
+          </div>
+        );
       case 'activities':
         return (
           <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className="flex items-center space-x-2 text-green-600 hover:text-green-700 font-medium"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Dashboard</span>
+              </button>
+            </div>
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Farm Activities</h2>
@@ -183,12 +220,22 @@ function App() {
       default:
         return (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className="flex items-center space-x-2 text-green-600 hover:text-green-700 font-medium"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Dashboard</span>
+              </button>
+            </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Feature
             </h3>
             <p className="text-gray-600">
               This feature would be implemented with full functionality in the production version.
             </p>
+          </div>
           </div>
         );
     }

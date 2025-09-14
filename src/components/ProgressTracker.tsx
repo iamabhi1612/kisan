@@ -1,13 +1,14 @@
 import React from 'react';
-import { TrendingUp, Target, Award, Calendar, BarChart3 } from 'lucide-react';
+import { TrendingUp, Target, Award, Calendar, BarChart3, ArrowLeft } from 'lucide-react';
 import { Activity, Crop } from '../types/farmer';
 
 interface ProgressTrackerProps {
   activities: Activity[];
   crops: Crop[];
+  onBack?: () => void;
 }
 
-export default function ProgressTracker({ activities, crops }: ProgressTrackerProps) {
+export default function ProgressTracker({ activities, crops, onBack }: ProgressTrackerProps) {
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   
@@ -40,6 +41,17 @@ export default function ProgressTracker({ activities, crops }: ProgressTrackerPr
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="flex items-center space-x-2 text-green-600 hover:text-green-700 font-medium"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Dashboard</span>
+        </button>
+      )}
+
       <div className="flex items-center space-x-4">
         <div className="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center shadow-sm">
           <BarChart3 className="h-6 w-6 text-purple-600" />

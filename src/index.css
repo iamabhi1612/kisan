@@ -76,6 +76,25 @@
   position: fixed !important;
 }
 
+/* Smooth menu animations */
+.menu-slide-enter {
+  transform: translateX(-100%);
+}
+
+.menu-slide-enter-active {
+  transform: translateX(0);
+  transition: transform 300ms ease-in-out;
+}
+
+.menu-slide-exit {
+  transform: translateX(0);
+}
+
+.menu-slide-exit-active {
+  transform: translateX(-100%);
+  transition: transform 300ms ease-in-out;
+}
+
 /* Smooth scrolling for main content */
 main {
   scroll-behavior: smooth;
