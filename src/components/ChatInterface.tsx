@@ -115,7 +115,7 @@ export default function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
     setNewMessage('');
 
     // Get AI response
-    setTimeout(() => {
+    setTimeout(async () => {
       const responseText = await getAIResponse(userMessage.message, language);
       
       const aiResponse: ChatMessage = {
